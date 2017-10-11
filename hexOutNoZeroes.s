@@ -29,6 +29,9 @@ main:
 
         # set up the loop counter variable
         li   $t0, 8  # 8 hex digits in a 32-bit number
+        
+        # set up the 'have we printed a nonzero character' variable
+        li   $t3, 0
 
         # Main loop
 loop:   srl  $t1, $s0, 28  # get leftmost digit by shifting it
@@ -38,7 +41,13 @@ loop:   srl  $t1, $s0, 28  # get leftmost digit by shifting it
         slti $t2, $t1, 10  # t2 is set to 1 if $t1 < 10    
         beq  $t2, $0,  over10
         addi  $t1, $t1, 48 # ASCII for '0' is 48
-        j    print
+        
+        beq $t3, 1, print
+        beq $t1, 48, next # checking if t1 is '0'
+        
+        li $t3, 1
+        j print
+        
 over10: addi  $t1, $t1, 55 # convert to ASCII for A-F
                            # ASCII code for 'A' is 65
                            # Use 55 because $t1 is over 10
@@ -49,7 +58,7 @@ print:  li   $v0, 11
         syscall            # Print ASCII char in $a0
 
         # Prepare for next iteration
-        sll  $s0, $s0, 4   # Drop current leftmost digit
+next:   sll  $s0, $s0, 4   # Drop current leftmost digit
         addi $t0, $t0, -1  # Update loop counter
         bne  $t0, $0, loop # Still not 0?, go to loop
 

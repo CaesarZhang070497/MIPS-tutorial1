@@ -26,9 +26,18 @@ main:
         li   $v0, 4
         la   $a0, outmsg
         syscall
-
+        
+        # print a '-' if the number is less than 0
+        slti $t0, $s0, 0
+        beq $t0, $0, linit
+        
+        #print '-'
+        li   $v0, 11
+        li  $a0, 45
+        syscall
+        
         # set up the loop counter variable
-        li   $t0, 8  # 8 hex digits in a 32-bit number
+linit:  li   $t0, 8  # 8 hex digits in a 32-bit number
 
         # Main loop
 loop:   srl  $t1, $s0, 28  # get leftmost digit by shifting it
